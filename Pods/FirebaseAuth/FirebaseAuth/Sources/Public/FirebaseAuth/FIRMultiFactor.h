@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-#import <TargetConditionals.h>
-#if TARGET_OS_IOS
-
 #import <Foundation/Foundation.h>
 
 #import "FIRAuth.h"
@@ -28,24 +25,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** @typedef FIRMultiFactorSessionCallback
     @brief The callback that triggered when a developer calls `getSessionWithCompletion`.
+        This type is available on iOS only.
     @param session The multi factor session returned, if any.
     @param error The error which occurred, if any.
 */
 typedef void (^FIRMultiFactorSessionCallback)(FIRMultiFactorSession *_Nullable session,
                                               NSError *_Nullable error)
-    NS_SWIFT_NAME(MultiFactorSessionCallback);
+    NS_SWIFT_NAME(MultiFactorSessionCallback) API_UNAVAILABLE(macos, tvos, watchos);
 
 /**
    @brief The string identifier for second factors. e.g. "phone".
+        This constant is available on iOS only.
 */
-extern NSString *const _Nonnull FIRPhoneMultiFactorID NS_SWIFT_NAME(PhoneMultiFactorID);
+extern NSString *const _Nonnull FIRPhoneMultiFactorID NS_SWIFT_NAME(PhoneMultiFactorID)
+    API_UNAVAILABLE(macos, tvos, watchos);
 
 /** @class FIRMultiFactor
     @brief The interface defining the multi factor related properties and operations pertaining to a
-   user.
+        user.
+        This class is available on iOS only.
 */
-NS_SWIFT_NAME(MultiFactor)
-@interface FIRMultiFactor : NSObject
+NS_SWIFT_NAME(MultiFactor) API_UNAVAILABLE(macos, tvos, watchos) @interface FIRMultiFactor
+    : NSObject
 
 @property(nonatomic, readonly) NSArray<FIRMultiFactorInfo *> *enrolledFactors;
 
@@ -54,7 +55,8 @@ NS_SWIFT_NAME(MultiFactor)
     @param completion A block with the session identifier for a second factor enrollment operation.
         This is used to identify the current user trying to enroll a second factor.
 */
-- (void)getSessionWithCompletion:(nullable FIRMultiFactorSessionCallback)completion;
+- (void)getSessionWithCompletion:(nullable void (^)(FIRMultiFactorSession *_Nullable credential,
+                                                    NSError *_Nullable error))completion;
 
 /** @fn enrollWithAssertion:displayName:completion:
     @brief Enrolls a second factor as identified by the `FIRMultiFactorAssertion` parameter for the
@@ -64,7 +66,7 @@ NS_SWIFT_NAME(MultiFactor)
 */
 - (void)enrollWithAssertion:(FIRMultiFactorAssertion *)assertion
                 displayName:(nullable NSString *)displayName
-                 completion:(nullable FIRAuthVoidErrorCallback)completion;
+                 completion:(nullable void (^)(NSError *_Nullable error))completion;
 
 /** @fn unenrollWithInfo:completion:
     @brief Unenroll the given multi factor.
@@ -72,7 +74,7 @@ NS_SWIFT_NAME(MultiFactor)
         or fails.
 */
 - (void)unenrollWithInfo:(FIRMultiFactorInfo *)factorInfo
-              completion:(nullable FIRAuthVoidErrorCallback)completion;
+              completion:(nullable void (^)(NSError *_Nullable error))completion;
 
 /** @fn unenrollWithFactorUID:completion:
     @brief Unenroll the given multi factor.
@@ -80,10 +82,8 @@ NS_SWIFT_NAME(MultiFactor)
         or fails.
 */
 - (void)unenrollWithFactorUID:(NSString *)factorUID
-                   completion:(nullable FIRAuthVoidErrorCallback)completion;
+                   completion:(nullable void (^)(NSError *_Nullable error))completion;
 
 @end
 
 NS_ASSUME_NONNULL_END
-
-#endif
